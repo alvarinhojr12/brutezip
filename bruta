@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Verifica se o nome do arquivo zip foi fornecido
+if [ -z "$1" ]; then
+  echo "Por favor, forneça o nome do arquivo zip como argumento"
+  exit 1
+fi
+
+# Verifica se o arquivo zip existe
+if [ ! -f "$1" ]; then
+  echo "Arquivo zip não encontrado"
+  exit 1
+fi
+
+# Verifica se o arquivo de senhas existe
+if [ ! -f "password.txt" ]; then
+  echo "Arquivo de senhas não encontrado"
+  exit 1
+fi
+
+# Tenta descompactar o arquivo com todas as senhas encontradas no arquivo
+while read -r PASSWORD; do
+  unzip -P "$PASSWORD" "$1" > /dev/null 2>&1
+  
+  if [ $? -eq 0 ]; then
+    echo "Arquivo descompactado com sucesso com a senha: $PASSWORD"
+    exit 0
+  fi
+done < password.txt
+
+echo "Nenhuma senha válida encontrada"
+exit 1
+
